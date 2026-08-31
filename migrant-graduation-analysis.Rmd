@@ -1,0 +1,123 @@
+---
+title: "Final Project Draft"
+author: "Saira Khatoon, Saskatoon Damm, Omar Alhammadi, Sawyer Stein"
+date: "2024-12-02"
+output: html_document
+---
+
+```{r setup, include=FALSE, echo=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+# Introduction 
+Understanding the factors influencing graduation rates is important for creating policies that ensure equal opportunities for all students. Migrant students face unique challenges, such as language barriers, unstable housing, and frequent relocations, which can affect their ability to graduate on time, while non-migrant students often experience more stability and access to resources. This study explores whether there is a significant difference in graduation rates between migrant and non-migrant students in the NYSED class of 2022. By analyzing data on graduation outcomes for both groups, we have shown that we do have statistically significant evidence that there is a difference in the graduation rates between migrant and non-migrant students in the NYSED class of 2022 for the 6-year cohort.
+
+# Background
+Data Source: https://data.nysed.gov/downloads.php "Graduation Rate Database" 2021-2022
+
+The dataset was collected by the New York State Education Department (NYSED), which tracks graduation and dropout rates annually across the state. The data was collected and compiled from reports submitted by schools and districts to NYSED. This includes student-level information that are put into categories such as race/ethnicity, migrant status, and school type. The data gives graduation outcomes for four-year, five-year, and six-year cohorts and also dropout rates and other post-graduation outcomes. Some key variables included in the dataset that are important to our analysis are migrant status, graduation rate, and dropout rate. These are related to our key question because they will help identify the percentage of students who graduated vs those who did not and their migrant status. A single row in the dataset represents data for a specific group at the state, county, district, or school level. Some unusual factors in the dataset is that for some years there is not data for both migrant and non-migrant graduates. This may impact our results. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(tidyverse)
+
+GRAD_RATE_AND_OUTCOMES_2022 = read_csv("GRAD_RATE_AND_OUTCOMES_2022.csv") 
+
+GRAD_RATE_AND_OUTCOMES_2022 <- read_csv("GRAD_RATE_AND_OUTCOMES_2022.csv") #Sawyer's different download process of the graph
+
+GRAD_RATE_AND_OUTCOMES_2022$grad_pct <- as.numeric(gsub("%", replacement = "", GRAD_RATE_AND_OUTCOMES_2022$grad_pct))
+
+filtered_data = GRAD_RATE_AND_OUTCOMES_2022 %>% filter(subgroup_name %in% c("Migrant","Not Migrant")) %>% 
+  filter(membership_desc == "2016 Total Cohort - 6 Year Outcome", subgroup_code %in% c("17", 18), membership_code == "6", membership_key == "180", aggregation_name == "All Districts and Charters") 
+
+filtered_data <- filtered_data %>%
+  mutate(
+    grad_cnt = as.numeric(grad_cnt),
+    enroll_cnt = as.numeric(enroll_cnt)
+  )
+
+  n1 =  filtered_data %>% filter(subgroup_name == "Migrant") %>% pull(enroll_cnt)  
+  n2 = filtered_data %>% filter(subgroup_name == "Not Migrant") %>% pull(enroll_cnt)  
+  x1 = filtered_data %>% filter(subgroup_name == "Migrant") %>% pull(grad_cnt)
+  x2 = filtered_data %>% filter(subgroup_name == "Not Migrant") %>% pull(grad_cnt)
+  filtered_data %>%
+    ggplot(aes(x=subgroup_name, y=grad_pct)) + 
+    geom_col(aes(fill = subgroup_name)) +
+    labs(x = "", y = "Graduation Percentage", title = "2016 New York High School 6-year Cohort Graduation Rates", fill = "") 
+```
+
+
+
+This graph depicts the difference in graduation rates for a six-year-cohort of all migrant and not migrant students in New York high schools from 2016-2022. The migrant population had a graduation rate of 64% and the non migrant population had a graduation rate of 89%. 
+
+# Analysis
+
+Is there a statistically significant difference in the proportion of six-year high school graduation rates between migrant and non-migrant students in the NYSED class of 2022?
+
+The parameters of interest in this analysis are: 
+
+  - p1: proportion of migrant students who graduated in 6 years in the NYSED class of 2022
+  
+  - p2: proportion of non-migrant students who graduated in 6 years in the NYSED class of 2022
+  
+  - x1: migrant students who graduated in 6 years in the NYSED class of 2022
+  
+  - n1: total migrant students enrolled for 6 year high school for the NYSED class of 2022
+  
+  - x2: non-migrant students who graduated in 6 years in the NYSED class of 2022
+  
+  - n2: total non-migrant students enrolled for 6 year high school for the NYSED class of 2022
+  
+We are going to look at p1-p2, the difference in graduation proportions for migrant and non-migrant students in the NYSED 6-year cohort class of 2022 and conduct a hypothesis test to determine whether there is a significant difference. 
+
+Assumptions: 
+
+ B- Either a student graduates or does not, so the binary assumption is met
+ 
+ I- The graduation of one student does not affect the graduation of another student, additionally each migrant status of a student is independent
+ 
+ N- the number of trials is fixed as there are an exact number of students in who enrolled for the 6 year high school for the NYSED class of 2022
+ 
+ S- Each student graduating has the same probability of success. (Although there may be outside factors that impact this, we choose to ignore them for this analysis.)
+ 
+Since our n value is large (much greater than 10), we can follow a normal distribution, as stated in the central limit theorem. 
+
+Our statistical models are: $$X_1 \sim \text{Binomial}(n_1, p_1), \quad X_2 \sim \text{Binomial}(n_2, p_2)$$
+
+Hypotheses: \[H_0: p_1 - p_2 = 0 \quad \text{(no difference in proportions)}\] \[H_A: p_1 - p_2 \neq 0 \quad \text{(difference in proportions exists)}\]
+
+```{r,echo=FALSE, warning=FALSE, message=FALSE}
+#test statistic 
+pbar = (x1+x2)/(n1+n2)
+numerator = (x1/n1) - (x2/n2)
+denominator = sqrt((pbar*(1-pbar)/n1) + (pbar*(1-pbar)/n2))
+test_stat = numerator / denominator 
+
+# p - value
+p_value = 2 * (pnorm(test_stat, 0, 1))
+```
+
+
+> Interpretation: 
+
+Since our p-value, 4.358553e-16, is less than our significance level, 0.05, we have evidence that there is a difference in the graduation rates between migrant and non-migrant students in the 6-year cohort.
+
+# Discussion 
+After conducting our hypothesis test, we are able to determine that there is a significant difference in the graduation rates between migrant and non-migrant students in the 6-year cohort NYSED class of 2022.
+
+This report provides strong statistical evidence that the different experiences of migrant students contribute to lower graduation rates compared to non-migrant students. However, one limitation is the scope of the data; it would be valuable to test this hypothesis on a larger scale, such as comparing migrant and non-migrant students in New York and Texas. A broader dataset would allow for more generalizable conclusions, as migrant students face challenges nationwide, not just in New York.
+
+Another shortcoming is that the test does not fully satisfy the binomial assumption that all students have the same probability of graduating, as external factors likely influence outcomes. It would be interesting to see this hypothesis tested with students in similar life situations for more accurate results. However, this is extremely difficult data to collect, so we decided to ignore the potential outside factors. Additionally, the independence assumption may not hold, as peer influence, such as a friend's decision to drop out, could impact a student's likelihood of graduating.
+
+
+
+
+
+
+
+
+
+
+
