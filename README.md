@@ -2,6 +2,8 @@
 
 A statistical analysis examining differences in six-year high school graduation rates between migrant and non-migrant students using data from the New York State Education Department (NYSED).
 
+**[View the Live Analysis](https://sawyerstein.github.io/stat240-migrant-graduation-analysis/migrant-graduation-analysis.html)**
+
 ## Project Overview
 
 This STAT 240 group project investigated whether there was a statistically significant difference in graduation rates between migrant and non-migrant students in New York.
