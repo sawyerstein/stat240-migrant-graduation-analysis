@@ -4,6 +4,8 @@ A statistical analysis examining differences in six-year high school graduation 
 
 **[View the Live Analysis](https://sawyerstein.github.io/stat240-migrant-graduation-analysis/migrant-graduation-analysis.html)**
 
+![Graduation rate comparison](graduation-rates-comparison.png)
+
 ## Project Overview
 
 This STAT 240 group project investigated whether there was a statistically significant difference in graduation rates between migrant and non-migrant students in New York.
