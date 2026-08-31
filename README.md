@@ -28,6 +28,17 @@ Using NYSED graduation data, we compared six-year graduation outcomes and applie
 - Hypothesis testing
 - Statistical interpretation and discussion of assumptions
 
+## My Contributions
+
+As a member of this four-person team, I contributed throughout the full analytical process, including:
+
+- Cleaning and preparing the data in R
+- Developing data visualizations
+- Conducting and interpreting the hypothesis test
+- Writing and communicating the statistical findings
+- Creating the final project presentation
+- Presenting the results as part of the team
+
 ## Data Source
 
 Data was obtained from the New York State Education Department (NYSED) Graduation Rate Database.
